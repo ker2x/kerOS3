@@ -13,5 +13,10 @@ sudo apt install automake autoconf nasm mtools xorriso
 make
 sudo make install
 cd ..
-git subtree add --prefix os/limine-barebones https://github.com/limine-bootloader/limine-barebones.git
+git subtree add --prefix os/limine-barebones https://github.com/limine-bootloader/limine-barebones.git trunk
+cd os/limine-barebones
+cp ../../limine/limine.h kernel/
+cd kernel
+make
+
 ```

@@ -82,7 +82,7 @@ override HEADER_DEPS := $(CFILES:.c=.d) $(ASFILES:.S=.d)
 all: $(KERNEL)
 
 limine.h:
-	curl https://raw.githubusercontent.com/limine-bootloader/limine/trunk/limine.h -o $@
+	@ echo "limine.h already copied"
 
 # Link rules for the final kernel executable.
 $(KERNEL): $(OBJ)
