@@ -1,5 +1,5 @@
 .PHONY: all
-all: limine bin include bootloaders
+all: limine basedirs basefiles
 
 # Download & compile limine
 limine:
@@ -8,31 +8,48 @@ limine:
 	cd limine && ./configure --enable-uefi-x86-64 --enable-uefi-cd --enable-bios --enable-bios-cd
 	$(MAKE) -C ./limine/
 
+.PHONY: basedirs
+basedirs: bin include bootloaders
 
+bin:
+	mkdir -p bin
 
-# move useful bin stuff to bin/
-bin: limine
-	mkdir bin
+include:
+	mkdir -p include
+
+bootloaders:
+	mkdir -p bootloaders
+
+.PHONY: basefiles
+basefiles : basedirs limine bin/limine-deploy include/limine.h bootloaders/BOOTX64.EFI bootloaders/limine-cd-efi.bin bootloaders/limine-cd.bin bootloaders/limine-hdd.bin bootloaders/limine.sys bootloaders/OVMF.fd
+
+bin/limine-deploy:
 	cp limine/bin/limine-deploy bin/
-	#cp limine/bin/limine-version bin/
-	
-# move useful .h stuff to include/
-include: limine
-	mkdir include
+
+include/limine.h: 
 	cp limine/limine.h include/
 
-# move the limine bootloaders to bootloaders/
-# download and extract OVMF.fd
-bootloaders: limine
-	mkdir bootloaders
+bootloaders/BOOTX64.EFI:
 	cp limine/bin/BOOTX64.EFI bootloaders/
+
+bootloaders/limine-cd-efi.bin:
 	cp limine/bin/limine-cd-efi.bin bootloaders/
+
+bootloaders/limine-cd.bin:
 	cp limine/bin/limine-cd.bin bootloaders/
+
+bootloaders/limine-hdd.bin:
 	cp limine/bin/limine-hdd.bin bootloaders/
+
+bootloaders/limine.sys:
 	cp limine/bin/limine.sys bootloaders/
-	curl -o OVMF-X64.zip https://efi.akeo.ie/OVMF/OVMF-X64.zip
-	7z -y e OVMF-X64.zip '-obootloaders/' OVMF.fd
-	rm -f OVMF-X64.zip
+
+bootloaders/OVMF.fd: 
+	7z -y e ext/OVMF-X64.zip '-obootloaders/' OVMF.fd
+	#touch bootloaders/OVMF.fd
+
+ext/OVMF-X64.zip:
+	curl -o ext/OVMF-X64.zip https://efi.akeo.ie/OVMF/OVMF-X64.zip
 
 .PHONY: limine-clean
 limine-clean:
